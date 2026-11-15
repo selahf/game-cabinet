@@ -1,2 +1,5 @@
 .git
 .venv
+.db.sqlite3
+.accounts/__pycache__
+.game_cabinet/__pycache__

@@ -3,7 +3,7 @@ from .models import Collection
 
 
 class CollectionAdmin(admin.ModelAdmin):
-    list_display = ("collection_name",)
+    list_display = ("name",)
 
 
 admin.site.register(Collection, CollectionAdmin)

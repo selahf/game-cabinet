@@ -6,3 +6,6 @@
 .game_cabinet/__pycache__
 .collection/__pycache__
 .collection/migrations
+
+__pycache__/
+*.py[cod]

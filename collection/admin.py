@@ -1,12 +1,9 @@
 from django.contrib import admin
-from .models import Game
+from .models import Collection
 
 
-class GameAdmin(admin.ModelAdmin):
-    list_display = (
-        "title",
-        "publisher",
-    )
+class CollectionAdmin(admin.ModelAdmin):
+    list_display = ("collection_name",)
 
 
-admin.site.register(Game, GameAdmin)
+admin.site.register(Collection, CollectionAdmin)

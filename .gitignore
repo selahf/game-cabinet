@@ -1,16 +1,16 @@
 .git
 .venv
+
+# local databases
 .db.sqlite3
 *.sqlite3
-.accounts/__pycache__
-.accounts/migrations
-.game_cabinet/__pycache__
-.collection/__pycache__
-.collection/migrations
 
+# python cache files
 __pycache__/
 *.py[cod]
 
-migrations/
-
-.catalogue/migrations
+# local app configuration and cache
+accounts/__pycache__
+game_cabinet/__pycache__
+collection/__pycache__
+catalogue/__pycache__

@@ -132,3 +132,6 @@ LOGOUT_REDIRECT_URL = "home"
 # configure media storage
 MEDIA_URL  = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+# user authentication
+AUTH_USER_MODEL = "accounts.MyUser"

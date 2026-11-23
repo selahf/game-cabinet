@@ -6,6 +6,12 @@ class CatalogueItem(models.Model):
     description = models.TextField(blank=True)
     publisher = models.CharField(max_length=150, blank=True)
     image_url = models.URLField(blank=True)
+    
+    image = models.ImageField(
+        upload_to = "catalogue_images/",
+        null = True,
+        blank = True
+    )
 
     def __str__(self):
         return self.name
@@ -33,15 +39,18 @@ class Game(CatalogueItem):
     # player and gameplay information
     min_players = models.PositiveSmallIntegerField(
         null = True,
-        blank = True
+        blank = True,
+        validators = [MinValueValidator(1)]
     )
     max_players = models.PositiveSmallIntegerField(
         null = True,
-        blank = True
+        blank = True,
+        validators = [MinValueValidator(1)]
     )
     play_time_minutes = models.PositiveIntegerField(
         null = True,
-        blank = True
+        blank = True,
+        validators = [MinValueValidator(1)]
     )
     min_age = models.PositiveSmallIntegerField(
         null = True,

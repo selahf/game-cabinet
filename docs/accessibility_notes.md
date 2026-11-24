@@ -23,3 +23,11 @@ There are three big things that help a lot:
     - use this to see if the theme colors you select are compliant with the rules
     - everyone benefits from high-contrast text, so make sure you are using it
 - add alt text to all images
+    - it is more important to put null tags on images that don't need describing
+    - but also, giving alt tags to images is important
+    - make sure that the alt tags are making sense (repetition can be really annoying with screenreaders)
+    - so be sure to create useful alt tags
+
+## Testing for Accessibility
+
+**Validators** can help to check for accessibility, but also dead code, loading times, differences between screen widths, etc.

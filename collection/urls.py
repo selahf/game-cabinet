@@ -4,6 +4,7 @@ from . import views
 app_name = "collection"
 
 urlpatterns = [
+    path("", views.home, name = "home"),
     path("games/", views.game_list, name = "game_list"),
     path(
         "collections/<int:collection_id>/games/add",

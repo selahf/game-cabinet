@@ -8,6 +8,9 @@ from catalogue.models import Game
 from .models import Collection, CollectionItem
 from .forms import CollectionItemForm
 
+def home(request):
+    return render(request, "home.html")
+
 @login_required
 def game_list(request):
     games = CollectionItem.objects.filter(

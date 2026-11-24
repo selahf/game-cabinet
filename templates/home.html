@@ -1,11 +1,27 @@
+
 {% extends "base.html" %}
 
 {% block content %}
-{% for post in posts %}
-<div class="post-entry">
-    <h2><a href="">{{ post.title }}</a></h2>
-    <p>Author: {{ post.author }}</a>
-    <p>{{ post.body }}</p>
+
+<div class="home-container">
+    <h1>Welcome to Game Cabinet!</h1>
+
+    <p>
+        Your personal collection of games, puzzles,
+        and everything in between.
+    </p>
+
+    {% if user.is_authenticated %} <!-- checks whether someone is logged in -->
+        <a href="{% url 'collection:game_list' %}"
+           class="btn btn-primary">
+            Manage Collection
+        </a>
+    {% else %}
+        <a href="{% url 'login' %}"
+           class="btn btn-primary">
+            Log In
+        </a>
+    {% endif %}
 </div>
-{% endfor %}
+
 {% endblock content %}

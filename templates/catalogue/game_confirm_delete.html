@@ -1,0 +1,37 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="confirmation-container">
+
+    <h1>Remove Game?</h1>
+
+    <p>
+        Are you sure you want to remove
+        <strong>{{ collection_item.item.name }}</strong>
+        from
+        <strong>{{ collection_item.collection.name }}</strong>?
+    </p>
+
+    <p>
+        This will remove the game from this collection,
+        but it will not delete the game from the catalogue.
+    </p>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <button type="submit">
+            Yes, Remove Game
+        </button>
+
+        <a href="{% url 'collection:game_list' %}">
+            Cancel
+        </a>
+
+    </form>
+
+</div>
+
+{% endblock content %}

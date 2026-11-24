@@ -1,0 +1,33 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="form-container">
+
+    <h1>Edit {{ collection_item.item.name }}</h1>
+
+    <p>Update the game information and collection details below.</p>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <h2>Game Information</h2>
+        {{ game_form.as_p }}
+
+        <h2>Collection Details</h2>
+        {{ collection_form.as_p }}
+
+        <button type="submit">
+            Save Changes
+        </button>
+
+        <a href="{% url 'collection:game_list' %}">
+            Cancel
+        </a>
+
+    </form>
+
+</div>
+
+{% endblock content %}

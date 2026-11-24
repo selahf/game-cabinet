@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Add a Game</h1>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    {{ game_form.as_p }}
+    {{ collection_form.as_p }}
+
+    <button type="submit">Save Game</button>
+</form>
+
+{% endblock content %}

@@ -1,11 +1,9 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
-from django.views.decorators.http import require_POST
 
 from catalogue.forms import GameForm
-from catalogue.models import Game
-from .models import Collection, CollectionItem
+from .models import CollectionItem
 from .forms import CollectionItemForm
 
 def home(request):
@@ -16,7 +14,7 @@ def game_list(request):
     games = CollectionItem.objects.filter(
         collection__user = request.user, # collection owned by logged-in user
         item__game__isnull = False # only games for now
-    ).select_related(
+    ).select_related( # performance optimizations
         "collection",
         "item",
         "item__game"
@@ -31,16 +29,10 @@ def game_list(request):
     )
     
 @login_required
-def game_create(request, collection_id):
-    collection = get_object_or_404( # a user cannot add a game to another user's collection
-        Collection,
-        pk = collection_id,
-        user = request.user
-    )
-    
+def game_create(request):   
     if request.method == "POST":
         game_form = GameForm(request.POST, request.FILES)
-        collection_form = CollectionItemForm(request.POST)
+        collection_form = CollectionItemForm(request.POST, user = request.user)
 
         if game_form.is_valid() and collection_form.is_valid():
             # create a user-owned catalogue entry
@@ -52,12 +44,11 @@ def game_create(request, collection_id):
             # create user's collection entry
             collection_item = collection_form.save(commit = False)
             collection_item.item = game
-            collection_item.collection = collection
             collection_item.save()
             
             messages.success(
                 request,
-                f"{game.name} was successfully added to {collection.name}!"
+                f"{game.name} was successfully added to {collection_item.collection.name}!"
             )
             
             # redirect to collection page
@@ -69,15 +60,16 @@ def game_create(request, collection_id):
             )
     else: # handling of get requests
         game_form = GameForm()
-        collection_form = CollectionItemForm()
+        collection_form = CollectionItemForm(
+            user = request.user
+        )
         
     return render(
         request,
         "catalogue/game_form.html",
         {
             "game_form": game_form,
-            "collection_form": collection_form,
-            "collection": collection
+            "collection_form": collection_form
         }
     )
 
@@ -90,17 +82,28 @@ def collection_item_edit(request, collection_item_id):
         item__game__isnull = False
     )
     
+    game = collection_item.item.game
+    
     if request.method == "POST":
-        form = CollectionItemForm(
+        game_form = GameForm(
             request.POST,
-            instance = collection_item
+            request.FILES,
+            instance = game
         )
-        if form.is_valid():
-            form.save()
+        
+        collection_form = CollectionItemForm(
+            request.POST,
+            instance = collection_item,
+            user = request.user
+        )
+        
+        if game_form.is_valid() and collection_form.is_valid():
+            game_form.save()
+            collection_form.save()
             
             messages.success(
                 request,
-                f"{collection_item.item.name} was successfully updated!"
+                f"{game.name} was successfully updated!"
             )
             return redirect("collection:game_list")
         else:
@@ -109,19 +112,20 @@ def collection_item_edit(request, collection_item_id):
                 "There was a problem with your submission. Please check the form and try again."
             )
     else:
-        form = CollectionItemForm(instance = collection_item)
+        game_form = GameForm(instance = game)
+        collection_form = CollectionItemForm(instance = collection_item, user = request.user)
 
     return render(
         request,
-        "catalogue/collection_item_form.html",
+        "catalogue/game_edit.html",
         {
-            "form": form,
+            "game_form": game_form,
+            "collection_form": collection_form,
             "collection_item": collection_item
         }
     )
     
 @login_required # only authenticated users can access
-@require_POST # view only responds to post requests
 def collection_item_delete(request, collection_item_id):
     collection_item = get_object_or_404( # makes sure item belongs to logged-in user
         CollectionItem,
@@ -130,14 +134,23 @@ def collection_item_delete(request, collection_item_id):
         item__game__isnull = False
     )
     
-    game_name = collection_item.item.name
-    collection_name = collection_item.collection.name
+    if request.method == "POST":
+        game_name = collection_item.item.name
+        collection_name = collection_item.collection.name
     
-    collection_item.delete() # delete relationship, not the game itself
+        collection_item.delete() # delete relationship, not the game itself
     
-    messages.success(
+        messages.success(
+            request,
+            f"{game_name} was removed from {collection_name}."
+        )
+    
+        return redirect("collection:game_list")
+    
+    return render(
         request,
-        f"{game_name} was removed from {collection_name}."
+        "catalogue/game_confirm_delete.html",
+        {
+            "collection_item": collection_item
+        }
     )
-    
-    return redirect("collection:game_list")

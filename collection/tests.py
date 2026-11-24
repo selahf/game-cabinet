@@ -67,12 +67,10 @@ class CollectionViewTests(TestCase):
         
     def test_game_create_success(self):
         response = self.client.post(
-            reverse(
-                "collection:game_create",
-                kwargs={"collection_id": self.collection.pk}
-            ),
+            reverse("collection:game_create"),
             data={
                 "name": "Catan",
+                "collection": self.collection.pk
             }
         )
 
@@ -103,10 +101,7 @@ class CollectionViewTests(TestCase):
             return_value=HttpResponse()
         ):
             response = self.client.post(
-                reverse(
-                    "collection:game_create",
-                    kwargs={"collection_id": self.collection.pk}
-                ),
+                reverse("collection:game_create"),
                 data={}
             )
 
@@ -132,6 +127,7 @@ class CollectionViewTests(TestCase):
                 kwargs={"collection_item_id": collection_item.pk}
             ),
             data={
+                "collection": self.collection.pk,
                 "family_favorite": "on",
                 "notes": "We love playing this game!",
             }
@@ -277,10 +273,7 @@ class CollectionViewTests(TestCase):
                 "get"
             ),
             (
-                reverse(
-                    "collection:game_create",
-                    kwargs={"collection_id": self.collection.pk}
-                ),
+                reverse("collection:game_create"),
                 "get"
             ),
             (
@@ -303,3 +296,24 @@ class CollectionViewTests(TestCase):
             with self.subTest(url=url, method=method):
                 response = getattr(self.client, method)(url)
                 self.assertEqual(response.status_code, 302)
+                
+    def test_game_create_rejects_another_users_collection(self):
+        response = self.client.post(
+            reverse("collection:game_create"),
+            {
+                "name": "Unauthorized Game",
+                "collection": self.other_collection.pk,
+            }
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertFalse(
+            Game.objects.filter(name="Unauthorized Game").exists()
+        )
+
+        self.assertFalse(
+            CollectionItem.objects.filter(
+                collection=self.other_collection
+            ).exists()
+        )

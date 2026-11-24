@@ -1,0 +1,118 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="collection-container">
+
+    <h1>My Game Collection</h1>
+
+    <p>All the games in your collections, in one place.</p>
+
+    <a href="{% url 'collection:game_create' %}">
+        Add a Game
+    </a>
+
+    {% if games %}
+
+        {% for collection_item in games %}
+
+            <div class="game-entry">
+
+                <h2>{{ collection_item.item.name }}</h2>
+
+                <p>
+                    <strong>Collection:</strong>
+                    {{ collection_item.collection.name }}
+                </p>
+
+                <p>
+                    <strong>Publisher:</strong>
+                    {{ collection_item.item.publisher|default:"Unknown" }}
+                </p>
+
+                <p>
+                    <strong>Year Published:</strong>
+                    {{ collection_item.item.game.year_published|default:"Unknown" }}
+                </p>
+
+                <p>
+                    <strong>Genres:</strong>
+                    {% for genre in collection_item.item.game.genres.all %}
+                        {{ genre.name }}{% if not forloop.last %}, {% endif %}
+                    {% empty %}
+                        Not specified
+                    {% endfor %}
+                </p>
+
+                <p>
+                    <strong>Players:</strong>
+                    {% if collection_item.item.game.min_players and collection_item.item.game.max_players %}
+                        {{ collection_item.item.game.min_players }}–{{ collection_item.item.game.max_players }}
+                    {% else %}
+                        Not specified
+                    {% endif %}
+                </p>
+
+                <p>
+                    <strong>Play Time:</strong>
+                    {% if collection_item.item.game.play_time_minutes %}
+                        {{ collection_item.item.game.play_time_minutes }} minutes
+                    {% else %}
+                        Not specified
+                    {% endif %}
+                </p>
+
+                <p>
+                    <strong>Minimum Age:</strong>
+                    {% if collection_item.item.game.min_age %}
+                        {{ collection_item.item.game.min_age }}+
+                    {% else %}
+                        Not specified
+                    {% endif %}
+                </p>
+
+                <p>
+                    <strong>Complexity:</strong>
+                    {% if collection_item.item.game.complexity %}
+                        {{ collection_item.item.game.complexity }}/5
+                    {% else %}
+                        Not specified
+                    {% endif %}
+                </p>
+
+                {% if collection_item.family_favorite %}
+                    <p>★ Family Favorite!</p>
+                {% endif %}
+
+                {% if collection_item.notes %}
+                    <p>
+                        <strong>Notes:</strong>
+                        {{ collection_item.notes }}
+                    </p>
+                {% endif %}
+
+                <div class="game-actions">
+                    <a href="{% url 'collection:game_edit' collection_item.pk %}">
+                        Edit
+                    </a>
+                    <a href="{% url 'collection:game_confirm_delete' collection_item.pk %}">
+                        Delete
+                    </a>
+                </div>
+
+            </div>
+
+            <hr>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>You haven't added any games to your collection yet!</p>
+
+    {% endif %}
+
+</div>
+
+{% endblock content %}

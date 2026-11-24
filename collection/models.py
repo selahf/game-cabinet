@@ -12,7 +12,7 @@ class Collection(models.Model):
     name = models.CharField(max_length=100)
 
     def __str__(self):
-        return f"{self.name} - {self.user.username}"
+        return f"{self.name} - {self.user.name}"
 
 class CollectionItem(models.Model):
     collection = models.ForeignKey(
@@ -62,7 +62,7 @@ class Favorite(models.Model):
         ]
 
         def __str__(self):
-            return f"{self.user.username} - {self.item.name}"
+            return f"{self.user.name} - {self.item.name}"
 
 class Rating(models.Model):
     user = models.ForeignKey(
@@ -88,4 +88,4 @@ class Rating(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.user.username} rated {self.item.name}"
+        return f"{self.user.name} rated {self.item.name}"
